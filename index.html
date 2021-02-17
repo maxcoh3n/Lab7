@@ -79,9 +79,7 @@
       const title = document.getElementById("title");
       const recordID = document.getElementById("recordID");
 
-      
-
-      let json = {test: "hello"}
+      let json = { test: "hello" };
 
       // This function should fetch all of the data from the given endpoint.
       // From the 4 CRUD actions, this is the READ action, and uses the GET http method.
@@ -94,7 +92,6 @@
           .then((text) => {
             output.innerHTML = text;
           })
-          .catch((error) => console.log("Request failed", error));
       }
 
       // This function should fetch one entry from the given endpoint.
@@ -106,13 +103,13 @@
         output.innerHTML = "";
         const id = window.prompt("Enter Record Id");
         if (id) {
-          fetch(endpoint + "/" + id)
-            .then((response) => {
-                return response.text()
-            })
-            .then((text) => {
-              output.innerHTML =text;
-            })
+          fetch(endpoint + "/" + id).then((response) => {
+            if (response.status == "404") {
+              output.innerHTML = "Network Error 404";
+              return;
+            }
+            response.text().then((text) => (output.innerHTML = text));
+          });
         }
       }
 
@@ -121,18 +118,17 @@
       // The main difference from updateRecord() will be the URL you send data to; check
       // the writeup to view the URL pattern for create and update
       function createRecord(action) {
-        if(action == "show"){
+        if (action == "show") {
           recordForm.style.display = "block";
           recordIDCont.style.display = "none";
           author.value = "";
           title.value = "";
-        }
-        else{
-          let json = {"author": author.value, "title": title.value};
+        } else {
+          let json = { author: author.value, title: title.value };
           fetch(endpoint, {
             method: "post",
             headers: {
-              "Content-type": "application/json; charset=UTF-8"
+              "Content-type": "application/json; charset=UTF-8",
             },
             body: JSON.stringify(json),
           })
@@ -140,7 +136,6 @@
             .then((text) => {
               output.innerHTML = text;
             })
-            .catch((error) => console.log("Request failed", error));
         }
       }
 
@@ -149,19 +144,18 @@
       // The main difference from createRecord() will be the URL you send data to; check
       // the writeup to view the URL pattern for create and update
       function updateRecord(action) {
-        if(action == "show"){
+        if (action == "show") {
           recordForm.style.display = "block";
           recordIDCont.style.display = "block";
           author.value = "";
           title.value = "";
           recordID.value = "";
-        }
-        else{
-          let json = {"author": author.value, "title": title.value};
+        } else {
+          let json = { author: author.value, title: title.value };
           fetch(endpoint + "/" + recordID.value, {
             method: "PUT",
             headers: {
-              "Content-type": "application/json; charset=UTF-8"
+              "Content-type": "application/json; charset=UTF-8",
             },
             body: JSON.stringify(json),
           })
@@ -169,7 +163,6 @@
             .then((text) => {
               output.innerHTML = text;
             })
-            .catch((error) => console.log("Request failed", error));
         }
       }
 
@@ -184,14 +177,15 @@
         output.innerHTML = "";
         const id = window.prompt("Enter Record Id");
         if (id) {
-          fetch(endpoint + "/" + id,{
-            method: "DELETE"
+          fetch(endpoint + "/" + id, {
+            method: "DELETE",
+          }).then((response) => {
+            if (response.status == "404") {
+              output.innerHTML = "Network Error 404";
+              return;
+            }
+            response.text().then((text) => (output.innerHTML = text));
           })
-            .then((response) => response.text())
-            .then((text) => {
-              output.innerHTML = text;
-            })
-            .catch((error) => console.log("Request failed!!!!!!!", error));
         }
       }
 
